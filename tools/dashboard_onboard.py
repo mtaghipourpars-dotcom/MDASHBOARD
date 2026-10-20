@@ -75,6 +75,7 @@ def make_specs(repo, answers, target_paths):
     assessment=f"""# ارزیابی REPO مقصد\n\n- REPO: {repo}\n- تاریخ بررسی: {stamp}\n- وضعیت: بررسی اولیه انجام شد؛ جزئیات در خروجی ابزار/گزارش این اجرا ثبت می‌شود.\n- ساختار موجود پیش از نوشتن: {len(target_paths)} مسیر\n- نام محصول: {answers['نام محصول']}\n- هدف: {answers['هدف محصول']}\n- نکته: محتوای فایل‌های موجود بدون تأیید بازنویسی نمی‌شود.\n"""
     questions=f"""# پرسش‌های باز\n\nاطلاعات زیر فقط شروع مصاحبه است؛ جزئیات صفحات و ویجت‌ها باید در گام‌های بعدی پرسیده و تأیید شوند.\n\n- [ ] عنوان/مسیر لوگو و دارایی‌های نهایی\n- [ ] فهرست دقیق صفحات و ترتیب سایدبار\n- [ ] ردیف/ستون و چیدمان هر صفحه\n- [ ] تعریف هر ویجت و جایگاه آن\n- [ ] منبع و قرارداد داده هر ویجت\n- [ ] تعریف و آستانه KPIها\n- [ ] زبان‌ها، RTL/LTR و معیارهای پذیرش\n"""
     work=f"""# دستور کار ماشین برای پروژه {repo}\n\nوضعیت: DRAFT؛ مجوز پیاده‌سازی رفتار تأییدنشده نیست.\n\n1. ابتدا این مشخصات و فایل‌های موجود REPO را بخوان.\n2. هیچ تصمیمی را از روی حدس قطعی نکن.\n3. پرسش‌های باز را مرحله‌ای از مالک بپرس.\n4. پیش از تغییر فایل موجود، تفاوت را نشان بده و اجازه بگیر.\n5. برای هر ویجت شناسه، صفحه، نوع، جایگاه، منبع، فیلدها، حالت‌ها و معیار پذیرش تعریف کن.\n6. حالت پیش‌فرض READ_ONLY است؛ اجرای عملیات فقط با تأیید صریح مجاز است.\n7. تست اجرا‌نشده را PASSED اعلام نکن.\n"""
+    cross_page_links = {"schema_version":"1.0","status":"DRAFT","links":[],"open_questions":["برای هر ویجت خلاصه/هشدار، صفحه مقصد و نگاشت فیلترها را تعریف کنید"]}
     cross_page_validation = """# Cross-Page Data Integrity & Consistency Validation
 وضعیت: REQUIRED GATE — معیار الزامی پیش از تأیید مشخصات و انتشار
 
@@ -129,6 +130,7 @@ CP-001 ReferentialIntegrity؛ CP-002 MetricDefinitionParity؛ CP-003 FilterParit
       "specs/data-contracts.json":json_bytes(data),
       "specs/metrics.json":json_bytes(metrics),
       "specs/interactions.json":json_bytes(interactions),
+      "specs/cross-page-links.json":json_bytes(cross_page_links),
       "specs/localization.json":json_bytes(localization),
       "specs/assets.json":json_bytes(assets),
       "docs/REPOSITORY_ASSESSMENT.md":assessment,
