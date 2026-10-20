@@ -35,7 +35,7 @@ G. KPI و هشدار: ID و نسخه تعریف، فرمول، دامنه، وا
 
 H. تعامل و اجرا: DISPLAY، MONITOR/ALERT و EXECUTE/ACTION. پیش‌فرض READ_ONLY است؛ عملیات اجرایی به مجوز، تأیید، audit، مدیریت خطا و rollback مشخص نیاز دارد.
 
-I. **Cross-Page Data Integrity & Consistency Validation:** بعد از تعریف صفحات/ویجت‌ها/KPIها/قراردادها و پیش از تأیید مشخصات، ماتریس ردیابی خلاصه→جزئیات بساز؛ ارجاع‌ها، تعریف KPI، فیلترها، کلیدهای یکتا، شمارش، واحد، زمان/نسخه داده، دسترسی، localization و رفتار drill-down را بررسی کن. جزئیات اجرایی در `docs/CROSS_PAGE_DATA_INTEGRITY.md` است.
+I. **Cross-Page Data Integrity & Consistency Validation:** بعد از تعریف صفحات/ویجت‌ها/KPIها/قراردادها و پیش از تأیید مشخصات، ماتریس ردیابی خلاصه→جزئیات را در `specs/cross-page-links.json` ثبت کن؛ ارجاع‌ها، تعریف KPI، فیلترها، کلیدهای یکتا، شمارش، واحد، زمان/نسخه داده، دسترسی، localization و رفتار drill-down را بررسی کن. جزئیات اجرایی در `docs/CROSS_PAGE_DATA_INTEGRITY.md` است.
 
 J. آزمون پذیرش: ساختار، داده، روابط بین صفحات، زبان، RTL/LTR، واکنش‌گرایی، دسترسی، امنیت و خطا. آزمون اجرا‌نشده NOT_RUN است.
 
