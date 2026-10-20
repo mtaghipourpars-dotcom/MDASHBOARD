@@ -33,8 +33,14 @@ def repo_info(repo, token):
     return api("GET", f"{API}/repos/{repo}", token)
 
 def tree(repo, branch, token):
-    data=api("GET", f"{API}/repos/{repo}/git/trees/{urllib.parse.quote(branch, safe='') }?recursive=1", token)
-    return {x["path"]:x for x in data.get("tree",[])}, data.get("truncated",False)
+    try:
+        data=api("GET", f"{API}/repos/{repo}/git/trees/{urllib.parse.quote(branch, safe='')}?recursive=1", token)
+        return {x["path"]:x for x in data.get("tree",[])}, data.get("truncated",False)
+    except RuntimeError as e:
+        # A newly created repository can have no initial commit yet.
+        if "Git Repository is empty" in str(e) or "API 409" in str(e):
+            return {}, False
+        raise
 
 def read_file(repo, path, branch, token):
     u=f"{API}/repos/{repo}/contents/{urllib.parse.quote(path, safe='/')}?ref={urllib.parse.quote(branch)}"
@@ -152,7 +158,7 @@ def main():
                 except Exception as e: failed.append((path,str(e))); continue
             else:
                 try:
-                    result=api("PUT",f"{API}/repos/{target}/contents/{urllib.parse.quote(path,safe='/')}",token,{"message":f"docs: add dashboard specification {path}","content":base64.b64encode(content.encode()).decode(),"branch":tgt_branch})
+                    result=api("PUT",f"{API}/repos/{target}/contents/{urllib.parse.quote(path,safe='/')}",token,{"message":f"docs: add dashboard specification {path}","content":base64.b64encode(content.encode()).decode(), **({} if target_was_empty else {"branch":tgt_branch})})
                 except Exception as e: failed.append((path,str(e))); continue
             pushed.append((path,result.get("commit",{}).get("sha","unknown")))
         print(f"\nPushed: {len(pushed)}; skipped: {len(skipped)}; failed: {len(failed)}")
