@@ -75,6 +75,51 @@ def make_specs(repo, answers, target_paths):
     assessment=f"""# ارزیابی REPO مقصد\n\n- REPO: {repo}\n- تاریخ بررسی: {stamp}\n- وضعیت: بررسی اولیه انجام شد؛ جزئیات در خروجی ابزار/گزارش این اجرا ثبت می‌شود.\n- ساختار موجود پیش از نوشتن: {len(target_paths)} مسیر\n- نام محصول: {answers['نام محصول']}\n- هدف: {answers['هدف محصول']}\n- نکته: محتوای فایل‌های موجود بدون تأیید بازنویسی نمی‌شود.\n"""
     questions=f"""# پرسش‌های باز\n\nاطلاعات زیر فقط شروع مصاحبه است؛ جزئیات صفحات و ویجت‌ها باید در گام‌های بعدی پرسیده و تأیید شوند.\n\n- [ ] عنوان/مسیر لوگو و دارایی‌های نهایی\n- [ ] فهرست دقیق صفحات و ترتیب سایدبار\n- [ ] ردیف/ستون و چیدمان هر صفحه\n- [ ] تعریف هر ویجت و جایگاه آن\n- [ ] منبع و قرارداد داده هر ویجت\n- [ ] تعریف و آستانه KPIها\n- [ ] زبان‌ها، RTL/LTR و معیارهای پذیرش\n"""
     work=f"""# دستور کار ماشین برای پروژه {repo}\n\nوضعیت: DRAFT؛ مجوز پیاده‌سازی رفتار تأییدنشده نیست.\n\n1. ابتدا این مشخصات و فایل‌های موجود REPO را بخوان.\n2. هیچ تصمیمی را از روی حدس قطعی نکن.\n3. پرسش‌های باز را مرحله‌ای از مالک بپرس.\n4. پیش از تغییر فایل موجود، تفاوت را نشان بده و اجازه بگیر.\n5. برای هر ویجت شناسه، صفحه، نوع، جایگاه، منبع، فیلدها، حالت‌ها و معیار پذیرش تعریف کن.\n6. حالت پیش‌فرض READ_ONLY است؛ اجرای عملیات فقط با تأیید صریح مجاز است.\n7. تست اجرا‌نشده را PASSED اعلام نکن.\n"""
+    cross_page_validation = """# Cross-Page Data Integrity & Consistency Validation
+وضعیت: REQUIRED GATE — معیار الزامی پیش از تأیید مشخصات و انتشار
+
+## هدف
+تضمین قابل‌ممیزی سازگاری ویجت‌های خلاصه/هشدار با صفحات جزئیات. برابر بودن عدد به‌تنهایی کافی نیست؛ تعریف KPI، مجموعه رکوردها، فیلترها، زمان/نسخه داده، واحد و دسترسی نیز بررسی می‌شود.
+
+## اصول
+1. هر KPI دارای ID پایدار، فرمول و نسخه مرجع در KPI Registry باشد.
+2. هر ویجت به Data Contract نسخه‌دار ارجاع دهد؛ مورد ناشناخته UNKNOWN/BLOCKED می‌ماند.
+3. هر drill-down مقصد، نگاشت فیلتر، محدوده زمانی و رفتار دسترسی مشخص داشته باشد.
+4. null، empty، stale، partial، unavailable و error بی‌صدا به صفر یا وضعیت سالم تبدیل نشوند.
+5. رابطه خلاصه و جزئیات فقط با محدوده، تعریف، واحد، زمان/نسخه و دامنه دسترسی سازگار مقایسه شود.
+6. ابهام در فرمول KPI، شرط واجد شرایط بودن، آستانه هشدار یا رفتار کاربری نیازمند تأیید مالک است.
+
+## ردیابی اجباری
+برای هر رابطه یک شناسه مانند LINK-001 ثبت شود: source_widget_id، target_page_id، kpi_id/version، data_contract_id/version، filter_mapping، time_scope، identity_key، SNAPSHOT/LIVE policy، acceptance_test_ids، status و evidence_refs.
+
+## کنترل‌های اجباری
+- ارجاع تمام page/widget/KPI/data-contractها معتبر و یکتا باشد.
+- فرمول، دامنه، شروط ورود/خروج، بازه، تجمیع و distinct-count یکسان باشد.
+- فیلترهای مؤثر و پارامترهای drill-down به مقصد منتقل شوند.
+- شمارش و مجموعه کلیدهای یکتا با داده مرجع تطبیق داشته باشد؛ pagination و duplicate handling آزموده شوند.
+- واحد، timezone، rounding و semantics وضعیت یکسان باشد.
+- calculated_at و source_updated_at ثبت شوند؛ snapshot_id/data_version در صورت پشتیبانی استفاده شود.
+- محدودیت دسترسی، localization، RTL/LTR و قالب اعداد بررسی شوند.
+- هر اختلاف باید با قاعده مصوب توضیح داده شود؛ اختلاف توضیح‌نداده‌شده FAIL است.
+
+## سیاست تازگی
+SNAPSHOT: خلاصه و جزئیات از یک نسخه داده استفاده کنند؛ برای تطبیق دقیق ترجیح دارد.
+LIVE: مقصد داده تازه می‌خواند؛ تغییر عدد فقط با زمان‌های قابل‌مشاهده و امکان تفکیک تغییر واقعی از خطای فیلتر قابل قبول است.
+سیاست نامشخص = BLOCKED.
+
+## تست‌های پایه
+CP-001 ReferentialIntegrity؛ CP-002 MetricDefinitionParity؛ CP-003 FilterParity؛ CP-004 CountReconciliation؛ CP-005 RecordSetReconciliation؛ CP-006 UnitAndTimeParity؛ CP-007 FreshnessAndSnapshot؛ CP-008 FailureStateSemantics؛ CP-009 DrillDownNavigation؛ CP-010 AuthorizationConsistency؛ CP-011 LocalizationParity؛ CP-012 Regression.
+هر نتیجه باید test_id، زمان/محیط، نسخه مشخصات، ورودی و شواهد، انتظار، نتیجه واقعی، PASS/FAIL/BLOCKED/NOT_RUN، اختلاف و مسئول پیگیری را ثبت کند.
+
+## معیار عبور
+تمام روابط خلاصه→جزئیات قرارداد و آزمون داشته باشند؛ تمام آزمون‌های بحرانی PASS باشند؛ اختلاف بحرانی یا ابهام مسدودکننده باقی نماند؛ شواهد و تأیید مالک ثبت شود. NOT_RUN برابر PASS نیست.
+
+## چرخه
+پس از تعریف صفحات، ویجت‌ها، KPIها و قراردادها ماتریس ردیابی بساز؛ قبل از تأیید مشخصات کنترل ساختاری و پوشش روابط را اجرا کن؛ پس از پیاده‌سازی تست fixtureها، پیش از release regression و در runtime تازگی/خطاها را پایش کن. تغییر قرارداد یا KPI آزمون‌های وابسته را برای اجرای مجدد نامعتبر می‌کند.
+
+## محدوده تضمین
+این Gate شواهد قابل ممیزی از سازگاری تعریف‌شده ارائه می‌کند، نه تضمین مطلق صحت ذاتی منبع داده یا نبود تمام خطاهای ممکن.
+"""
     return {
       "specs/application.json":json_bytes(application),
       "specs/shell.json":json_bytes(shell),
@@ -89,6 +134,7 @@ def make_specs(repo, answers, target_paths):
       "docs/REPOSITORY_ASSESSMENT.md":assessment,
       "docs/OPEN_QUESTIONS.md":questions,
       "docs/IMPLEMENTATION_WORK_ORDER.md":work,
+      "docs/CROSS_PAGE_DATA_INTEGRITY.md":cross_page_validation,
       "docs/DECISIONS.md":"# Decision log\n\n| ID | Decision | Provenance | Status | Date |\n|---|---|---|---|---|\n| D-001 | Initial project intake recorded | OWNER_PROVIDED | PROPOSED | "+stamp+" |\n",
       "docs/CHANGELOG.md":"# Changelog\n\n- "+stamp+": Initial dashboard project specification draft generated.\n"
     }
