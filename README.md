@@ -22,6 +22,7 @@ python tools/dashboard_onboard.py --repo OWNER/REPO
 - `docs/METHODOLOGY.md`: قواعد مرجع و مراحل تعریف.
 - `docs/OPERATING_WORKFLOW.md`: گردش‌کار عملیاتی.
 - `docs/CROSS_PAGE_DATA_INTEGRITY.md`: Gate الزامی یکپارچگی و سازگاری بین صفحات.
+- `specs/cross-page-links.json` در پروژه مقصد: رجیستری ماشین‌خوان ارتباط ویجت خلاصه/هشدار با صفحه جزئیات.
 - `docs/DECISIONS.md` و `docs/OPEN_QUESTIONS.md` در پروژه‌های مقصد: منشأ تصمیم‌ها و ابهام‌های باز.
 - `specs/`: قراردادهای ماشین‌خوان پروژه مقصد.
 - `tools/dashboard_onboard.py`: ابزار مقایسه REPO، مصاحبه و ثبت مشخصات.
